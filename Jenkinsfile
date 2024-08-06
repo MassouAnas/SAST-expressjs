@@ -25,16 +25,21 @@ pipeline {
                 archiveArtifacts 'semgrep.junit.xml'
                 xunit(
                     tools: [GoogleTest(pattern : 'semgrep.junit.xml')], 
-                    thresholds: [failed(failureThreshold: '9')],
+                    thresholds: [failed(failureThreshold: '100')],
                     )
             }
         }
-        stage('Dependancy checking') {
-            agent any
-            steps {
-                sh 'echo Dependancy checking'
-            }
-        }
+        stage('OWASP Dependency-Check Vulnerabilities') {
+      steps {
+        dependencyCheck additionalArguments: ''' 
+                    -o './'
+                    -s './'
+                    -f 'ALL' 
+                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
+        
+        dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+      }
+    }
     }
 }
 

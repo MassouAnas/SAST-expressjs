@@ -30,6 +30,7 @@ pipeline {
             }
         }
         stage('OWASP Dependency-Check Vulnerabilities') {
+        agent any
       steps {
         dependencyCheck additionalArguments: ''' 
                     -o './'
